@@ -1,0 +1,11 @@
+.cs-hero {
+  background: linear-gradient(
+      270deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgb(2 2 3 / 74%) 41%
+    ),
+    url(https://i.ibb.co/JrHrL3M/pexels-quang-nguyen-vinh-3232534.jpg);
+  height: 500px;
+  background-position: center center;
+  background-size: cover;
+}

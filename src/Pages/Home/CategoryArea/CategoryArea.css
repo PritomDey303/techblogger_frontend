@@ -1,0 +1,13 @@
+.cs-divider{
+    margin-top: 20px;
+    height: 3px;
+    width: 100px;
+    background-color: black;
+    display: block;
+}
+.cs-img{
+    position: relative;
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+}

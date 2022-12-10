@@ -1,0 +1,13 @@
+.cs-sp-img ,
+.cs-dp-img{
+    border-radius: 6px;
+    object-fit: cover;
+}
+.cs-dp-img{
+    height: 140px;
+    width: 140px;
+}
+.cs-sp-img{
+    height: 60px;
+    width: 60px;
+}

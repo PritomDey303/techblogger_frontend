@@ -1,3 +1,12 @@
-.ddmenu a {
-  margin-top: -6px;
+.dd-menu > a {
+  margin-top: -7px !important;
+  color: black !important;
+}
+
+/* mediaquery for 990px on dd-menu class */
+@media (max-width: 990px) {
+  .dd-menu > a {
+    margin-left: 11px !important;
+    color: black !important;
+  }
 }

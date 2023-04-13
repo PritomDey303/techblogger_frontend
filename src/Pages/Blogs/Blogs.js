@@ -12,7 +12,7 @@ const Blogs = () => {
 
       <div className="container">
         <div className="row mt-3 gy-4">
-          {posts.map(post => (
+          {posts.map((post) => (
             <SinglePostCard key={post._id} post={post}></SinglePostCard>
           ))}
         </div>

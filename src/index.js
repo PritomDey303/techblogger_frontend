@@ -1,18 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import PostContext from './Context/PostContext';
+import "bootstrap/dist/css/bootstrap.min.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import PostContext from "./Context/PostContext";
+import ToastContext from "./Context/ToastContext";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-   <PostContext>
-   <App />
-   </PostContext>
-  </React.StrictMode>
+  <PostContext>
+    <ToastContext>
+      <App />
+    </ToastContext>
+  </PostContext>
 );
 
 // If you want to start measuring performance in your app, pass a function

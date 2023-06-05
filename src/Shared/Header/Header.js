@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { DropdownSubmenu, NavDropdownMenu } from "react-bootstrap-submenu";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext";
 import "./Header.css";
 const Header = () => {
+  const { authData, logout } = useContext(AuthContext);
   const navItems = (
     <>
       <li>
@@ -23,12 +25,22 @@ const Header = () => {
         </Link>
       </li>
       <li>
-        <Link
-          className="text-decoration-none text-dark fw-semibold px-2 mx-1"
-          to={"/login"}
-        >
-          Login
-        </Link>
+        {!authData.isLoggedIn ? (
+          <Link
+            className="text-decoration-none text-dark fw-semibold px-2 mx-1"
+            to={"/login"}
+          >
+            Login
+          </Link>
+        ) : (
+          <Link
+            className="text-decoration-none text-dark fw-semibold px-2 mx-1"
+            onClick={logout}
+            to={"/login"}
+          >
+            Logout
+          </Link>
+        )}
       </li>
       <li>
         <Link
@@ -38,19 +50,25 @@ const Header = () => {
           Register
         </Link>
       </li>
-      <li>
-        <NavDropdownMenu
-          title="Dashboard"
-          id="collasible-nav-dropdown"
-          className="text-dark fw-semibold dd-menu"
-        >
-          <DropdownSubmenu href="#action/3.7" title="Manage Blogs">
-            <NavDropdown.Item href="#action/8.1">Create Blog</NavDropdown.Item>
+      {authData.isLoggedIn && (
+        <li>
+          <NavDropdownMenu
+            title="Dashboard"
+            id="collasible-nav-dropdown"
+            className="text-dark fw-semibold dd-menu"
+          >
+            <DropdownSubmenu href="#action/3.7" title="Manage Blogs">
+              <NavDropdown.Item href="#action/8.1">
+                Create Blog
+              </NavDropdown.Item>
 
-            <NavDropdown.Item href="#action/9.1">Update Blog</NavDropdown.Item>
-          </DropdownSubmenu>
-        </NavDropdownMenu>
-      </li>
+              <NavDropdown.Item href="#action/9.1">
+                Update Blog
+              </NavDropdown.Item>
+            </DropdownSubmenu>
+          </NavDropdownMenu>
+        </li>
+      )}
     </>
   );
 

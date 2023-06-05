@@ -4,22 +4,25 @@ import { FiChevronRight, FiUser } from "react-icons/fi";
 import { SlCalender } from "react-icons/sl";
 import { Link } from "react-router-dom";
 
+import moment from "moment/moment";
 import "./SingleCard.css";
 
 const SinglePostCard = ({ post }) => {
   const {
     _id,
     title,
-    details,
-    thumbnail_url,
-    author: { name, published_date },
+    description,
+    image_url,
+    createdAt,
+    author: { name },
   } = post;
-
+  //get time from createdAt using moment
+  const time = moment(createdAt).fromNow();
   return (
     <div className="col-md-4">
       <div className="bg-white rounded shadow">
         <div className="position-relative">
-          <img className="cs-img-post" src={thumbnail_url} alt="" />
+          <img className="cs-img-post" src={image_url} alt="" />
           <span className="position-absolute bg-danger bottom-0 start-0 text-center py-1 px-2 text-white fw-semibold">
             Trending
           </span>
@@ -29,9 +32,12 @@ const SinglePostCard = ({ post }) => {
             <FiUser />
             {name}
           </span>
-          <span className="fw-semibold fs-6 d-flex align-items-center gap-1">
+          <span
+            className="fw-semibold fs-6 d-flex align-items-center gap-1"
+            style={{ fontSize: "8px" }}
+          >
             <SlCalender />
-            {published_date?.split(" ")[0]}
+            {time}
           </span>
           <span className="fw-semibold fs-6 d-flex align-items-center gap-1">
             <FaRegComments /> 20
@@ -39,11 +45,13 @@ const SinglePostCard = ({ post }) => {
         </div>
         <div className="mx-2 my-3 pb-3">
           <h2 title={title} className="fs-5 ">
-            {title.length > 60 ? title.slice(0, 60) + "..." : title}
+            {title?.length > 60 ? title?.slice(0, 60) + "..." : title}
           </h2>
 
           <p className="my-3 mb-4">
-            {details.length > 120 ? details.slice(0, 120) + "..." : details}
+            {description?.length > 120
+              ? description?.slice(0, 120) + "..."
+              : description}
           </p>
 
           <Link

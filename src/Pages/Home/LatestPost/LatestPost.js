@@ -4,9 +4,10 @@ import SinglePostCard from "../../../Shared/SinglePostCard/SinglePostCard";
 
 const LatestPost = () => {
   const { posts } = useContext(AllPost);
+  // console.log(posts);
 
   //limit post
-  const allPosts = posts.slice(0, 6);
+  const allPosts = posts;
   // console.log(limitPost);
 
   return (
@@ -18,7 +19,7 @@ const LatestPost = () => {
         </div>
 
         <div className="row mt-3 gy-4">
-          {allPosts.map((post) => (
+          {allPosts?.map((post) => (
             <SinglePostCard key={post._id} post={post}></SinglePostCard>
           ))}
         </div>

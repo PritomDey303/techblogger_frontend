@@ -1,7 +1,65 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FaLock } from "react-icons/fa";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext";
+import { Notification } from "../../Context/ToastContext";
+import { checkStringType } from "../../UtilityFunction/useInputValidator";
 import "./Login.scss";
 const Login = () => {
+  const { loading, login, authData } = useContext(AuthContext);
+
+  const [string, setString] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const { notification } = useContext(Notification);
+  // send user to home page if already logged in
+  if (authData.isLoggedIn) {
+    return <Navigate to="/" />;
+  }
+  //handle submit
+  const handleSubmit = (e) => {
+    let data = {};
+    //prevent default form submission
+    e.preventDefault();
+    if (loading) {
+      return "Loading";
+    }
+    if (checkStringType(string) === "email") {
+      data = {
+        email: string,
+        password: password,
+        mobile: "",
+        username: "",
+      };
+    } else if (checkStringType(string) === "mobile") {
+      data = {
+        email: "",
+        password: password,
+        mobile: string,
+        username: "",
+      };
+    } else if (checkStringType(string) === "username") {
+      data = {
+        email: "",
+        password: password,
+        mobile: "",
+        username: string,
+      };
+    } else {
+      return notification("Invalid Input", "danger");
+    }
+    if (password.trim() === "") {
+      return notification("Invalid password", "danger");
+    }
+
+    //clear input fields
+    const clearInput = () => {
+      setString("");
+      setPassword("");
+    };
+    //login function call
+    login(data, clearInput);
+  };
+
   return (
     <>
       <section className="ftco-section">
@@ -15,13 +73,16 @@ const Login = () => {
                 <h3 className="text-center text-danger mb-4">
                   Have an account?
                 </h3>
-                <form action="#" className="login-form">
+                <form onSubmit={handleSubmit} className="login-form">
                   <div className="form-group">
                     <input
                       type="text"
                       className="form-control rounded-left"
-                      placeholder="Username"
+                      placeholder="Enter your email or mobile or username"
                       required
+                      name="string"
+                      value={string}
+                      onChange={(e) => setString(e.target.value)}
                     />
                   </div>
                   <div className="form-group d-flex">
@@ -30,6 +91,9 @@ const Login = () => {
                       className="form-control rounded-left"
                       placeholder="Password"
                       required
+                      name="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
 

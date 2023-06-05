@@ -2,6 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
+import AuthProvider from "./Context/AuthContext";
 import PostContext from "./Context/PostContext";
 import ToastContext from "./Context/ToastContext";
 import "./index.css";
@@ -11,7 +12,9 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <PostContext>
     <ToastContext>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </ToastContext>
   </PostContext>
 );

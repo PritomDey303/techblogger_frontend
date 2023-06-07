@@ -56,10 +56,11 @@ const Header = () => {
             title="Dashboard"
             id="collasible-nav-dropdown"
             className="text-dark fw-semibold dd-menu"
+            style={{ zIndex: 10000000 }}
           >
-            <DropdownSubmenu href="#action/3.7" title="Manage Blogs">
+            <DropdownSubmenu title="Manage Blogs">
               <NavDropdown.Item href="#action/8.1">
-                Create Blog
+                <Link to="/createblog">Create Blog</Link>
               </NavDropdown.Item>
 
               <NavDropdown.Item href="#action/9.1">

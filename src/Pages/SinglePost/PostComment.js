@@ -5,23 +5,25 @@ import { Button } from "react-bootstrap";
 import human from "../../../src/assets/images/humanicon.png";
 import { AuthContext } from "../../Context/AuthContext";
 import { Notification } from "../../Context/ToastContext";
+import { url } from "../../Context/Url";
 import useTextToxicityDetection from "../../UtilityFunction/useTextToxicityDetector";
-const PostComment = ({ comments, setDone }) => {
+const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
   const { authData } = useContext(AuthContext);
   const [comment, setComment] = useState("");
   const [toxicityScore, setToxicityScore] = useState(null);
   const [loading, setLoading] = useState(false);
   const { getToxicityScore } = useTextToxicityDetection();
   const [toxicType, setToxicType] = useState([]);
+  const { notification } = useContext(Notification);
+  //console.log(authData);
 
   //toxicity check
   const handleCheckToxicity = async (comment) => {
     const score = await getToxicityScore(comment);
     return score;
   };
-  console.log(comments);
   //handle comment
-  const handleCommentSubmit = async (e) => {
+  const handleCommentToxicitySubmit = async (e) => {
     //empty toxic type array
     setToxicType([]);
     //clear comment field
@@ -52,9 +54,40 @@ const PostComment = ({ comments, setDone }) => {
       setToxicType((toxicType) => [...toxicType, "obscene"]);
     }
     if (toxicType.length > 0) {
-      Notification("error", "Your comment is not allowed");
+      notification("error", "Your comment is not allowed");
     }
   };
+  /////////////////////////////////////////////////
+  ///////////////////////////////////////////////
+  //handle comment submit
+  const handleCommentSubmit = async () => {
+    if (toxicType.length > 0) {
+      setDone(true);
+      return notification("error", "Your comment is not allowed");
+    }
+    //api call
+    const response = await fetch(`${url}/api/comment/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        comment,
+        blogid,
+      }),
+    });
+    const data = await response.json();
+    console.log(data);
+
+    if (data.status === "success") {
+      notification("Comment added successfully", "success");
+      setTrigger(!trigger);
+    } else {
+      notification("Something went wrong", "danger");
+    }
+  };
+
   return (
     <div className="bg-white p-3 rounded">
       <h2 className="fs-5">Comments</h2>
@@ -111,7 +144,7 @@ const PostComment = ({ comments, setDone }) => {
                     setComment(e.target.value);
                   }}
                   onBlur={(e) => {
-                    handleCommentSubmit(e);
+                    handleCommentToxicitySubmit(e);
                   }}
                 ></textarea>
               </div>
@@ -123,20 +156,11 @@ const PostComment = ({ comments, setDone }) => {
                   `This comment contains ${toxicType.join(", ")} words.`}
               </p>
               {comment === "" || toxicType?.length || loading ? (
-                <Button
-                  variant="danger"
-                  type="submit"
-                  onClick={handleCommentSubmit}
-                  disabled
-                >
+                <Button variant="danger" type="submit" disabled>
                   Submit
                 </Button>
               ) : (
-                <Button
-                  variant="danger"
-                  type="submit"
-                  onClick={handleCommentSubmit}
-                >
+                <Button variant="danger" onClick={handleCommentSubmit}>
                   Submit
                 </Button>
               )}

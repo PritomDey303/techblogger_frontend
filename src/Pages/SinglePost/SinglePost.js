@@ -1,3 +1,4 @@
+import { Rating } from "@mui/material";
 import moment from "moment/moment";
 import React, { useContext, useEffect, useState } from "react";
 import { AiTwotoneLike } from "react-icons/ai";
@@ -7,7 +8,9 @@ import { FiUser } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { Link, useParams } from "react-router-dom";
+import { AuthContext } from "../../Context/AuthContext";
 import { AllPost } from "../../Context/PostContext";
+import { Notification } from "../../Context/ToastContext";
 import { url } from "../../Context/Url";
 import ReactLoader from "../../Shared/ReactLoader/ReactLoader";
 import human1 from "../../assets/images/humanicon.png";
@@ -15,10 +18,16 @@ import PostComment from "./PostComment";
 import "./SinglePost.css";
 
 const SinglePost = () => {
+  const { notification } = useContext(Notification);
+  const { authData } = useContext(AuthContext);
+
   const { id } = useParams();
   const [post, setPost] = useState({});
   const { posts } = useContext(AllPost);
   const [done, setDone] = useState(true);
+  const [trigger, setTrigger] = useState(true);
+  const [givenRating, setGivenRating] = useState(0);
+  const [alreadyRating, setAlreadyRating] = useState(0);
   //single post api
 
   useEffect(() => {
@@ -27,9 +36,9 @@ const SinglePost = () => {
       .then((res) => res.json())
       .then((data) => {
         setPost(data.data);
-        setDone(true);
+        console.log(data.data);
       });
-  }, [id]);
+  }, [id, trigger]);
 
   const {
     image_url,
@@ -37,11 +46,78 @@ const SinglePost = () => {
     author,
     description,
     comments,
-
+    ratings,
     avgrating,
-
+    likes,
     likesCount,
   } = post;
+  //useeffect for already rating
+  useEffect(() => {
+    setDone(false);
+    ratings?.filter((item) => item?.user?._id === authData?.user?._id).length >
+    0
+      ? setAlreadyRating(
+          ratings?.filter((item) => item?.user?._id === authData?.user?._id)[0]
+            ?.rating
+        )
+      : setAlreadyRating(0);
+    setDone(true);
+  }, [ratings, authData?.user?._id]);
+
+  /////////////////////////////
+  //handle rating
+  const handleRating = () => {
+    setDone(false);
+    fetch(`${url}/api/rating/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({
+        blogid: id,
+        rating: givenRating,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          notification("Rating added successfully", "success");
+
+          setTrigger(!trigger);
+        } else {
+          notification("Something went wrong", "danger");
+        }
+        setDone(true);
+      });
+  };
+  //////////////////////////////////////////
+  //handle like
+  const handleLike = () => {
+    setDone(false);
+    fetch(`${url}/api/like/create`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+
+      body: JSON.stringify({
+        blogid: id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          //notification("Liked successfully", "success");
+          setTrigger(!trigger);
+        } else {
+          notification("Something went wrong", "danger");
+        }
+        setDone(true);
+      });
+  };
+  //////////////////////////////////////////
 
   return (
     <>
@@ -74,12 +150,70 @@ const SinglePost = () => {
                   <h2 className="fs-4 fw-semibold">{title}</h2>
                   <p>{description}</p>
 
-                  <div className="mt-5">
-                    <p className="fw-semibold">{likesCount} likes</p>
-                    <button className="btn btn-primary d-flex align-items-center">
-                      <AiTwotoneLike />
-                      Like
-                    </button>
+                  <div className="d-flex justify-content-between align-items-center">
+                    {/* like code */}
+                    <div className="mt-5">
+                      <p className="fw-semibold">{likesCount} likes</p>
+                      {likes?.filter(
+                        (item) => item?.user?._id === authData?.user?._id
+                      ).length === 0 ? (
+                        <button
+                          onClick={handleLike}
+                          className="btn likebutton d-flex align-items-center"
+                        >
+                          <span className="text-secondary">
+                            {" "}
+                            <AiTwotoneLike />
+                            like
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-primary d-flex align-items-center"
+                          onClick={handleLike}
+                        >
+                          <AiTwotoneLike />
+                          Like
+                        </button>
+                      )}
+                    </div>
+                    {/* rating code */}
+                    <div>
+                      <p className="fw-semibold">Rate the post</p>
+                      <Rating
+                        name="simple-controlled"
+                        value={givenRating}
+                        onChange={(event, newValue) => {
+                          setGivenRating(newValue);
+                        }}
+                      />
+                      {ratings?.filter(
+                        (item) => item?.user?._id === authData?.user?._id
+                      ).length > 0 ? (
+                        <p
+                          className="text-secondary"
+                          style={{ fontSize: "12px" }}
+                        >
+                          You have already rated this post with{" "}
+                          {Array.from({ length: alreadyRating }).map(
+                            (_, index) => (
+                              <span key={index} className="text-warning">
+                                {/* star icon */}
+                                <BsStarFill />
+                              </span>
+                            )
+                          )}
+                        </p>
+                      ) : null}
+
+                      {/* submit button */}
+                      <button
+                        className="btn btn-outline-danger d-block mt-1"
+                        onClick={handleRating}
+                      >
+                        Submit Rating
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -127,6 +261,9 @@ const SinglePost = () => {
                     <PostComment
                       comments={comments}
                       setDone={setDone}
+                      blogid={id}
+                      trigger={trigger}
+                      setTrigger={setTrigger}
                     ></PostComment>
                   </div>
                 </div>

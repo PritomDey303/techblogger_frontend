@@ -59,7 +59,7 @@ const Header = () => {
             style={{ zIndex: 10000000 }}
           >
             <DropdownSubmenu title="Manage Blogs">
-              <NavDropdown.Item href="#action/8.1">
+              <NavDropdown.Item>
                 <Link to="/createblog">Create Blog</Link>
               </NavDropdown.Item>
 

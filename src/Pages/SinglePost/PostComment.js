@@ -62,7 +62,7 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
   //handle comment submit
   const handleCommentSubmit = async () => {
     if (toxicType.length > 0) {
-      setDone(true);
+      setDone(false);
       return notification("error", "Your comment is not allowed");
     }
     //api call
@@ -78,11 +78,13 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
       }),
     });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
 
     if (data.status === "success") {
       notification("Comment added successfully", "success");
+      setComment("");
       setTrigger(!trigger);
+      setDone(true);
     } else {
       notification("Something went wrong", "danger");
     }

@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const { notification } = useContext(Notification);
+  const [loginTrigger, setLoginTrigger] = useState(false);
 
   const [authData, setAuthData] = useState({
     isLoggedIn: false,
@@ -24,20 +25,19 @@ const AuthProvider = ({ children }) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
+          console.log(data.user);
           if (data.status === "success") {
             setAuthData({
               isLoggedIn: true,
               user: data.user,
             });
-            console.log(authData);
           }
           setLoading(false);
         });
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [loginTrigger]);
 
   const login = (data, clearInput) => {
     setLoading(true);
@@ -51,7 +51,7 @@ const AuthProvider = ({ children }) => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
+        console.log(data + "authcontext");
         if (data?.status === "success") {
           localStorage.setItem("token", data.token);
           setAuthData({
@@ -61,6 +61,7 @@ const AuthProvider = ({ children }) => {
           setLoading(false);
           notification(data?.message, "success");
           clearInput();
+          setLoginTrigger(!loginTrigger);
         }
         if (data?.status === "error") {
           notification(data?.message, "danger");

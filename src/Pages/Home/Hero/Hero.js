@@ -35,7 +35,7 @@ const Hero = () => {
                 Trending Post
               </h4>
               <h1 className=" mt-2 font-bold text-white fs-3">
-                {singlePost?.description}
+                {singlePost?.title}
               </h1>
               <div className="d-flex justify-content-start gap-3 mt-4 mb-5">
                 <span className="bg-danger p-1 px-2 rounded-2 fs-6 text-white fw-semibold">

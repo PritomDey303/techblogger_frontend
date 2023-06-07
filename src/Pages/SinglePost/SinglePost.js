@@ -1,14 +1,13 @@
 import { Rating } from "@mui/material";
 import moment from "moment/moment";
 import React, { useContext, useEffect, useState } from "react";
-import { AiTwotoneLike } from "react-icons/ai";
+import { AiTwotoneDislike, AiTwotoneLike } from "react-icons/ai";
 import { BsLinkedin, BsStarFill } from "react-icons/bs";
 import { FaFacebookSquare, FaRegComments } from "react-icons/fa";
 import { FiUser } from "react-icons/fi";
 import { MdEmail } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { Link, useParams } from "react-router-dom";
-import { AuthContext } from "../../Context/AuthContext";
 import { AllPost } from "../../Context/PostContext";
 import { Notification } from "../../Context/ToastContext";
 import { url } from "../../Context/Url";
@@ -19,15 +18,16 @@ import "./SinglePost.css";
 
 const SinglePost = () => {
   const { notification } = useContext(Notification);
-  const { authData } = useContext(AuthContext);
+  //const { authData } = useContext(AuthContext);
 
   const { id } = useParams();
   const [post, setPost] = useState({});
   const { posts } = useContext(AllPost);
   const [done, setDone] = useState(true);
   const [trigger, setTrigger] = useState(true);
-  const [givenRating, setGivenRating] = useState(0);
-  const [alreadyRating, setAlreadyRating] = useState(0);
+  const [givenRating, setGivenRating] = useState(1);
+  const [alreadyRating, setAlreadyRating] = useState(-1);
+  const [like, setLike] = useState(false);
   //single post api
 
   useEffect(() => {
@@ -36,8 +36,39 @@ const SinglePost = () => {
       .then((res) => res.json())
       .then((data) => {
         setPost(data.data);
-        console.log(data.data);
+        //console.log(data.data);
       });
+
+    //call api to check if user already rated
+    fetch(`${url}/api/rating/check/${id}`, {
+      headers: {
+        Authorization: `bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+        if (data.status === "success") {
+          setAlreadyRating(data.rating);
+        }
+      });
+    //call api to check if user already liked
+    fetch(`${url}/api/like/check/${id}`, {
+      headers: {
+        Authorization: `bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log(data);
+        if (data?.like === true) {
+          setLike(true);
+        } else {
+          setLike(false);
+        }
+      });
+
+    setDone(true);
   }, [id, trigger]);
 
   const {
@@ -46,28 +77,21 @@ const SinglePost = () => {
     author,
     description,
     comments,
-    ratings,
+
     avgrating,
-    likes,
+
     likesCount,
   } = post;
-  //useeffect for already rating
-  useEffect(() => {
-    setDone(false);
-    ratings?.filter((item) => item?.user?._id === authData?.user?._id).length >
-    0
-      ? setAlreadyRating(
-          ratings?.filter((item) => item?.user?._id === authData?.user?._id)[0]
-            ?.rating
-        )
-      : setAlreadyRating(0);
-    setDone(true);
-  }, [ratings, authData?.user?._id]);
 
   /////////////////////////////
   //handle rating
   const handleRating = () => {
     setDone(false);
+    if (givenRating === -1) {
+      notification("Please give a rating", "danger");
+      setDone(true);
+      return;
+    }
     fetch(`${url}/api/rating/create`, {
       method: "POST",
       headers: {
@@ -88,6 +112,7 @@ const SinglePost = () => {
         } else {
           notification("Something went wrong", "danger");
         }
+
         setDone(true);
       });
   };
@@ -110,12 +135,13 @@ const SinglePost = () => {
       .then((data) => {
         if (data.status === "success") {
           //notification("Liked successfully", "success");
+          setDone(true);
           setTrigger(!trigger);
         } else {
           notification("Something went wrong", "danger");
         }
-        setDone(true);
       });
+    setDone(true);
   };
   //////////////////////////////////////////
 
@@ -154,26 +180,23 @@ const SinglePost = () => {
                     {/* like code */}
                     <div className="mt-5">
                       <p className="fw-semibold">{likesCount} likes</p>
-                      {likes?.filter(
-                        (item) => item?.user?._id === authData?.user?._id
-                      ).length === 0 ? (
+                      {!like ? (
                         <button
                           onClick={handleLike}
-                          className="btn likebutton d-flex align-items-center"
+                          className="btn btn-primary  d-flex align-items-center"
                         >
-                          <span className="text-secondary">
-                            {" "}
-                            <AiTwotoneLike />
-                            like
-                          </span>
+                          <AiTwotoneLike />
+                          like
                         </button>
                       ) : (
                         <button
-                          className="btn btn-primary d-flex align-items-center"
+                          className="btn likebutton d-flex align-items-center"
                           onClick={handleLike}
                         >
-                          <AiTwotoneLike />
-                          Like
+                          <span className="text-secondary">
+                            <AiTwotoneDislike />
+                            unlike
+                          </span>
                         </button>
                       )}
                     </div>
@@ -187,25 +210,13 @@ const SinglePost = () => {
                           setGivenRating(newValue);
                         }}
                       />
-                      {ratings?.filter(
-                        (item) => item?.user?._id === authData?.user?._id
-                      ).length > 0 ? (
-                        <p
-                          className="text-secondary"
-                          style={{ fontSize: "12px" }}
-                        >
-                          You have already rated this post with{" "}
-                          {Array.from({ length: alreadyRating }).map(
-                            (_, index) => (
-                              <span key={index} className="text-warning">
-                                {/* star icon */}
-                                <BsStarFill />
-                              </span>
-                            )
-                          )}
-                        </p>
-                      ) : null}
 
+                      {alreadyRating !== -1 && (
+                        <p className="text-secondary">
+                          You already rated this post with {alreadyRating}{" "}
+                          <BsStarFill className="text-warning"></BsStarFill>.
+                        </p>
+                      )}
                       {/* submit button */}
                       <button
                         className="btn btn-outline-danger d-block mt-1"

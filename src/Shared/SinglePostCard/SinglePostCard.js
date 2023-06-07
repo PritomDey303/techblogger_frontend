@@ -49,9 +49,12 @@ const SinglePostCard = ({ post }) => {
           </h2>
 
           <p className="my-3 mb-4">
-            {description?.length > 120
-              ? description?.slice(0, 120) + "..."
-              : description}
+            {
+              //show only 100 character from description
+              description?.length > 50
+                ? description?.slice(0, 100) + "..."
+                : description
+            }
           </p>
 
           <Link

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { GiArchiveRegister } from "react-icons/gi";
+import { Navigate } from "react-router-dom";
 import { AuthContext } from "../../Context/AuthContext";
 import { Notification } from "../../Context/ToastContext";
 import {
@@ -11,7 +12,8 @@ import {
 } from "../../UtilityFunction/useInputValidator";
 import "./Register.scss";
 const Register = () => {
-  const { loading, signup } = useContext(AuthContext);
+  const { loading, signup, isSignup, setIsSignup, authData } =
+    useContext(AuthContext);
   const { notification } = useContext(Notification);
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -69,6 +71,13 @@ const Register = () => {
     signup(data, clearInput);
   };
 
+  if (isSignup) {
+    setIsSignup(false);
+    return <Navigate to="/login" />;
+  }
+  if (authData.isLoggedIn) {
+    return <Navigate to="/" />;
+  }
   return (
     <>
       <section className="ftco-section">

@@ -14,67 +14,92 @@ const CreateBlog = () => {
   const [category, setCategory] = useState("");
   const [file, setFile] = useState(null);
   const [done, setDone] = useState(true);
-
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
-
-  //handle form submit for multipart form data
+  //handle image upload
   const handleFormSubmit = (e) => {
-    setDone(false);
     e.preventDefault();
-    //validation
-    if (
-      title.trim() === "" ||
-      description.trim() === "" ||
-      category.trim() === "" ||
-      file === null
-    ) {
-      notification("Please fill all the fields", "danger");
-      setDone(true);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("category", category);
-    console.log(formData);
-    //api call with token
-
-    fetch(`${url}/api/blog/create`, {
+    setDone(false);
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "csyt0qle");
+    data.append("cloud_name", "dmyyyzg6r");
+    fetch("https://api.cloudinary.com/v1_1/dmyyyzg6r/image/upload", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: formData,
+      body: data,
     })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        if (data.status === "success") {
-          notification("Blog Created Successfully", "success");
-          setTriggerPost(!triggerPost);
+        if (data?.secure_url) {
+          /////////////////////////////////////
+          ////////////////////////////////////////
+          if (
+            title.trim() === "" ||
+            description.trim() === "" ||
+            category.trim() === "" ||
+            file === null
+          ) {
+            notification("Please fill all the fields", "danger");
+            setDone(true);
+            return;
+          }
+
+          const blogData = {
+            title: title,
+            description: description,
+            category: category,
+            image_url: data?.secure_url,
+          };
+          console.log(blogData);
+          //api call with token
+          const token = localStorage.getItem("token");
+          fetch(`${url}/api/blog/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `bearer ${token}`,
+            },
+            body: JSON.stringify(blogData),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              if (data?.status === "success") {
+                notification("Blog created successfully", "success");
+                setTriggerPost(!triggerPost);
+
+                setTitle("");
+                setDescription("");
+                setCategory("");
+                setFile(null);
+
+                setDone(true);
+              } else {
+                notification("Something went wrong", "danger");
+                setDone(true);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+              notification("Something went wrong", "danger");
+              setDone(true);
+            });
+          ////////////////////////////////////////
+          ////////////////////////////////////////
         } else {
-          notification("Something went wrong", "danger");
+          setDone(true);
+          return notification("Something went wrong", "danger");
         }
       })
-      //clearing the form
-      .then(() => {
-        setTitle("");
-        setDescription("");
-        setCategory("");
-        setFile(null);
-      })
-
       .catch((err) => {
-        console.log(err);
-        notification("Something went wrong", "danger");
+        setDone(true);
+        return notification("Something went wrong", "danger");
       });
-
-    setDone(true);
   };
+
+  //handle form submit for multipart form data
 
   return !done ? (
     <ReactLoader />
@@ -112,6 +137,7 @@ const CreateBlog = () => {
                   type="file"
                   className="form-control"
                   onChange={handleFileChange}
+                  name="file"
                   id="exampleInputPassword1"
                 />
               </div>

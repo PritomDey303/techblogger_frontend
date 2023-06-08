@@ -8,7 +8,7 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const { notification } = useContext(Notification);
   const [loginTrigger, setLoginTrigger] = useState(false);
-
+  const [isSignup, setIsSignup] = useState(false);
   const [authData, setAuthData] = useState({
     isLoggedIn: false,
     user: null,
@@ -88,6 +88,7 @@ const AuthProvider = ({ children }) => {
           setLoading(false);
           notification(data?.message, "success");
           setLoading(false);
+          setIsSignup(true);
           clearInput();
         }
 
@@ -111,7 +112,17 @@ const AuthProvider = ({ children }) => {
     setLoading(false);
   };
   return (
-    <AuthContext.Provider value={{ authData, login, signup, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        authData,
+        login,
+        signup,
+        logout,
+        loading,
+        isSignup,
+        setIsSignup,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

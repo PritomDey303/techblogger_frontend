@@ -42,14 +42,16 @@ const Header = () => {
           </Link>
         )}
       </li>
-      <li>
-        <Link
-          className="text-decoration-none text-dark fw-semibold px-2 mx-1"
-          to={"/register"}
-        >
-          Register
-        </Link>
-      </li>
+      {!authData.isLoggedIn && (
+        <li>
+          <Link
+            className="text-decoration-none text-dark fw-semibold px-2 mx-1"
+            to={"/register"}
+          >
+            Register
+          </Link>
+        </li>
+      )}
       {authData.isLoggedIn && (
         <li>
           <NavDropdownMenu
@@ -63,8 +65,8 @@ const Header = () => {
                 <Link to="/createblog">Create Blog</Link>
               </NavDropdown.Item>
 
-              <NavDropdown.Item href="#action/9.1">
-                Update Blog
+              <NavDropdown.Item>
+                <Link to="/yourblogs">YourBlogs</Link>
               </NavDropdown.Item>
             </DropdownSubmenu>
           </NavDropdownMenu>

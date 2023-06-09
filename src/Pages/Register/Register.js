@@ -21,6 +21,24 @@ const Register = () => {
   const [mobile, setMobile] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [date, setDate] = React.useState("");
+  //check if age is greater than 18
+
+  const handleDate = (date) => {
+    //check if the date is older than 18
+    const today = new Date();
+    const birthDate = new Date(date);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const month = today.getMonth() - birthDate.getMonth();
+    //check if the month is less than 0 or month is 0 and date is less than 0
+    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+      return false;
+    }
+    if (age < 12) {
+      return false;
+    }
+    return true;
+  };
 
   //handle submit
   const handleSubmit = (e) => {
@@ -44,6 +62,9 @@ const Register = () => {
     if (!mobileValidator(mobile) || mobile === "") {
       return notification("Invalid mobile number", "danger");
     }
+    if (date === "" || handleDate(date) === false) {
+      return notification("You are not 12 years old.", "danger");
+    }
     if (passwordValidator(password) === false || password === "") {
       return notification("Invalid password", "danger");
     }
@@ -65,6 +86,7 @@ const Register = () => {
       setUsername("");
       setMobile("");
       setPassword("");
+      setDate("");
       setConfirmPassword("");
     };
 
@@ -137,6 +159,18 @@ const Register = () => {
                       name="mobile"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
+                    />
+                  </div>
+                  {/* bootstrap date picker for birthdate */}
+                  <div className="form-group d-flex">
+                    <input
+                      type="date"
+                      className="form-control rounded-left"
+                      placeholder="Birthdate"
+                      required
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      name="birthdate"
                     />
                   </div>
 

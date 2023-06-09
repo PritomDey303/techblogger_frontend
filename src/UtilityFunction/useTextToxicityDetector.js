@@ -16,11 +16,13 @@ const useTextToxicityDetection = () => {
       return null;
     }
     const predictions = await model.classify(text);
-    //console.log(predictions);
+
+    console.log(predictions);
     const scores = {};
     predictions.forEach((prediction) => {
       scores[prediction.label] = prediction.results[0].match;
     });
+    //console.log(scores);
     return scores;
   };
 

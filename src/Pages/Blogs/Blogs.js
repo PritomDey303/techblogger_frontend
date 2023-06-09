@@ -1,12 +1,17 @@
 import React, { useContext } from "react";
 import { AllPost } from "../../Context/PostContext";
+import BlogPagination from "../../Shared/BlogPagination/BlogPagination";
 import HeaderBg from "../../Shared/HeaderBg/HeaderBg";
+import ReactLoader from "../../Shared/ReactLoader/ReactLoader";
 import SinglePostCard from "../../Shared/SinglePostCard/SinglePostCard";
-
+import "./Blogs.css";
 const Blogs = () => {
-  const { posts } = useContext(AllPost);
+  const { posts, setPage, page, totalPageNumber, done } = useContext(AllPost);
+  console.log(posts);
 
-  return (
+  return !done ? (
+    <ReactLoader />
+  ) : (
     <section>
       <HeaderBg content={"Blogs"}></HeaderBg>
 
@@ -15,6 +20,15 @@ const Blogs = () => {
           {posts.map((post) => (
             <SinglePostCard key={post._id} post={post}></SinglePostCard>
           ))}
+        </div>
+        <div className="row mt-3 pagination-container">
+          <div className="pagination">
+            <BlogPagination
+              page={page}
+              setPage={setPage}
+              totalPageNumber={totalPageNumber}
+            />
+          </div>
         </div>
       </div>
     </section>

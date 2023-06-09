@@ -25,18 +25,22 @@ const Register = () => {
   //check if age is greater than 18
 
   const handleDate = (date) => {
-    //check if the date is older than 18
+    //check if the date is older than 12 years
     const today = new Date();
     const birthDate = new Date(date);
     const age = today.getFullYear() - birthDate.getFullYear();
     const month = today.getMonth() - birthDate.getMonth();
+    console.log(age);
+    console.log(month);
     //check if the month is less than 0 or month is 0 and date is less than 0
     if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
       return false;
     }
+    //if age is less than 12 return false
     if (age < 12) {
       return false;
     }
+
     return true;
   };
 

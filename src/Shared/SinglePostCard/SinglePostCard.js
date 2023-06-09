@@ -1,5 +1,4 @@
 import React from "react";
-import { FaRegComments } from "react-icons/fa";
 import { FiChevronRight, FiUser } from "react-icons/fi";
 import { SlCalender } from "react-icons/sl";
 import { Link } from "react-router-dom";
@@ -16,6 +15,7 @@ const SinglePostCard = ({ post }) => {
     createdAt,
     author: { name },
   } = post;
+
   //get time from createdAt using moment
   const time = moment(createdAt).fromNow();
   return (
@@ -23,6 +23,7 @@ const SinglePostCard = ({ post }) => {
       <div className="bg-white rounded shadow">
         <div className="position-relative">
           <img className="cs-img-post" src={image_url} alt="" />
+
           <span className="position-absolute bg-danger bottom-0 start-0 text-center py-1 px-2 text-white fw-semibold">
             Trending
           </span>
@@ -38,9 +39,6 @@ const SinglePostCard = ({ post }) => {
           >
             <SlCalender />
             {time}
-          </span>
-          <span className="fw-semibold fs-6 d-flex align-items-center gap-1">
-            <FaRegComments /> 20
           </span>
         </div>
         <div className="mx-2 my-3 pb-3">

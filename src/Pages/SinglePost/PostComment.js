@@ -15,6 +15,7 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
   const { getToxicityScore } = useTextToxicityDetection();
   const [toxicType, setToxicType] = useState([]);
   const { notification } = useContext(Notification);
+  const [blur, setBlur] = useState(false);
   //console.log(authData);
 
   //toxicity check
@@ -147,6 +148,13 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
                   }}
                   onBlur={(e) => {
                     handleCommentToxicitySubmit(e);
+                    setBlur(true);
+                  }}
+                  //on not blur reset toxicity score
+                  onFocus={() => {
+                    setBlur(false);
+                    setToxicityScore(null);
+                    setToxicType([]);
                   }}
                 ></textarea>
               </div>
@@ -157,7 +165,10 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
                 {toxicType?.length > 0 &&
                   `This comment contains ${toxicType.join(", ")} words.`}
               </p>
-              {comment === "" || toxicType?.length || loading ? (
+              {comment.trim() === "" ||
+              !blur ||
+              toxicType?.length ||
+              loading ? (
                 <Button variant="danger" type="submit" disabled>
                   Submit
                 </Button>

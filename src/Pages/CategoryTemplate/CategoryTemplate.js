@@ -21,7 +21,7 @@ const CategoryTemplate = () => {
       .then((data) => {
         console.log(data);
         setPosts(data.data.blogs);
-        setTotalPageNumber(Math.ceil(data?.data?.blogs?.length / limit));
+        setTotalPageNumber(Math.ceil(data?.data?.totalPages));
         setDone(true);
       });
   }, [id, page]);

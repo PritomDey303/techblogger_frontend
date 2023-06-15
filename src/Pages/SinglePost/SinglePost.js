@@ -12,6 +12,7 @@ import { AllPost } from "../../Context/PostContext";
 import { Notification } from "../../Context/ToastContext";
 import { url } from "../../Context/Url";
 import ReactLoader from "../../Shared/ReactLoader/ReactLoader";
+import { getToken } from "../../UtilityFunction/getToken";
 import human1 from "../../assets/images/humanicon.png";
 import PostComment from "./PostComment";
 import "./SinglePost.css";
@@ -42,7 +43,7 @@ const SinglePost = () => {
     //call api to check if user already rated
     fetch(`${url}/api/rating/check/${id}`, {
       headers: {
-        Authorization: `bearer ${localStorage.getItem("token")}`,
+        Authorization: `bearer ${getToken()}`,
       },
     })
       .then((res) => res.json())
@@ -55,7 +56,7 @@ const SinglePost = () => {
     //call api to check if user already liked
     fetch(`${url}/api/like/check/${id}`, {
       headers: {
-        Authorization: `bearer ${localStorage.getItem("token")}`,
+        Authorization: `bearer ${getToken()}`,
       },
     })
       .then((res) => res.json())
@@ -96,7 +97,7 @@ const SinglePost = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getToken()}`,
       },
       body: JSON.stringify({
         blogid: id,
@@ -124,7 +125,7 @@ const SinglePost = () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${getToken()}`,
       },
 
       body: JSON.stringify({

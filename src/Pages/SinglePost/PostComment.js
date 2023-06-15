@@ -6,6 +6,7 @@ import human from "../../../src/assets/images/humanicon.png";
 import { AuthContext } from "../../Context/AuthContext";
 import { Notification } from "../../Context/ToastContext";
 import { url } from "../../Context/Url";
+import { getToken } from "../../UtilityFunction/getToken";
 import useTextToxicityDetection from "../../UtilityFunction/useTextToxicityDetector";
 const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
   const { authData } = useContext(AuthContext);
@@ -71,7 +72,7 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `bearer ${localStorage.getItem("token")}`,
+        Authorization: `bearer ${getToken()}`,
       },
       body: JSON.stringify({
         comment,
@@ -79,7 +80,7 @@ const PostComment = ({ comments, setDone, blogid, trigger, setTrigger }) => {
       }),
     });
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
 
     if (data.status === "success") {
       notification("Comment added successfully", "success");

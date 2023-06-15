@@ -34,7 +34,7 @@ export const checkStringType = (input) => {
   if (emailRegex.test(input)) {
     return "email";
   } else if (mobileRegex.test(input)) {
-    return "email";
+    return "mobile";
   } else if (usernameRegex.test(input)) {
     return "username";
   } else {

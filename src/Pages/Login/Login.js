@@ -10,7 +10,9 @@ const Login = () => {
 
   const [string, setString] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [rememberMe, setRememberMe] = React.useState(false);
   const { notification } = useContext(Notification);
+  console.log(rememberMe);
   // send user to home page if already logged in
   if (authData.isLoggedIn) {
     return <Navigate to="/" />;
@@ -18,6 +20,7 @@ const Login = () => {
   //handle submit
   const handleSubmit = (e) => {
     let data = {};
+    // console.log(checkStringType(Number(string)));
     //prevent default form submission
     e.preventDefault();
     if (loading) {
@@ -30,7 +33,7 @@ const Login = () => {
         mobile: "",
         username: "",
       };
-    } else if (checkStringType(string) === "mobile") {
+    } else if (checkStringType(Number(string)) === "mobile") {
       data = {
         email: "",
         password: password,
@@ -57,7 +60,7 @@ const Login = () => {
       setPassword("");
     };
     //login function call
-    login(data, clearInput);
+    login(data, clearInput, rememberMe);
   };
 
   return (
@@ -96,7 +99,14 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
-
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      className=" form-check-input"
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    <label>Remember me</label>
+                  </div>
                   <div className="form-group mt-2">
                     <button
                       type="submit"

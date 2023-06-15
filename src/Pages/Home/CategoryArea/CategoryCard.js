@@ -4,9 +4,6 @@ import { Link } from "react-router-dom";
 const CategoryCard = ({ category }) => {
   const { value } = category;
 
-  // default category image added Here
-  // https://i.ibb.co/sms65cJ/pexels-gianluca-grisenti-4215102.jpg
-
   return (
     <div className="col-md-3">
       <div

@@ -1,5 +1,6 @@
 //Auth context to handle user authentication and authorization manually
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getToken } from "../UtilityFunction/getToken";
 import { Notification } from "./ToastContext";
 import { url } from "./Url";
 
@@ -16,7 +17,7 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getToken();
     if (token) {
       fetch(`${url}/api/auth/keeplogin`, {
         headers: {
@@ -39,7 +40,8 @@ const AuthProvider = ({ children }) => {
     }
   }, [loginTrigger]);
 
-  const login = (data, clearInput) => {
+  const login = (data, clearInput, rememberMe) => {
+    console.log(data);
     setLoading(true);
     //api call for login
     fetch(`${url}/api/auth/login`, {
@@ -53,7 +55,15 @@ const AuthProvider = ({ children }) => {
       .then((data) => {
         console.log(data + "authcontext");
         if (data?.status === "success") {
-          localStorage.setItem("token", data.token);
+          //clear all previous token
+          localStorage.removeItem("token") ||
+            sessionStorage.removeItem("token");
+          if (rememberMe) {
+            localStorage.setItem("token", data.token);
+          }
+          if (!rememberMe) {
+            sessionStorage.setItem("token", data.token);
+          }
           setAuthData({
             isLoggedIn: true,
             user: data.user,
@@ -108,7 +118,7 @@ const AuthProvider = ({ children }) => {
       isLoggedIn: false,
       user: null,
     });
-    localStorage.removeItem("token");
+    localStorage.removeItem("token") || sessionStorage.removeItem("token");
     setLoading(false);
   };
   return (

@@ -11,9 +11,9 @@ import {
   usernameValidator,
 } from "../../UtilityFunction/useInputValidator";
 import "./Register.scss";
+
 const Register = () => {
-  const { loading, signup, isSignup, setIsSignup, authData } =
-    useContext(AuthContext);
+  const { loading, signup, isSignup, setIsSignup, authData } = useContext(AuthContext);
   const { notification } = useContext(Notification);
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
@@ -22,76 +22,40 @@ const Register = () => {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [date, setDate] = React.useState("");
-  //check if age is greater than 18
 
   const handleDate = (date) => {
-    //check if the date is older than 12 years
     const today = new Date();
     const birthDate = new Date(date);
-    const age = today.getFullYear() - birthDate.getFullYear();
+    let age = today.getFullYear() - birthDate.getFullYear();
     const month = today.getMonth() - birthDate.getMonth();
-    console.log(age);
-    console.log(month);
-    //check if the month is less than 0 or month is 0 and date is less than 0
     if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
-      return false;
+      age--;
     }
-    //if age is less than 12 return false
-    if (age < 12) {
-      return false;
-    }
-
-    return true;
+    return age >= 12;
   };
 
-  //handle submit
   const handleSubmit = (e) => {
-    //prevent default form submission
     e.preventDefault();
-    //create a function to call navigate
 
-    if (loading) {
-      return "Loading";
-    }
-    console.log(2);
-    if (name === "") {
-      return notification("Invalid name", "danger");
-    }
-    if (!emailValidator(email) || email === "") {
-      return notification("Invalid email", "danger");
-    }
-    if (!usernameValidator(username) || username === "") {
-      return notification("Invalid username", "danger");
-    }
-    if (!mobileValidator(mobile) || mobile === "") {
-      return notification("Invalid mobile number", "danger");
-    }
-    if (date === "" || handleDate(date) === false) {
-      return notification("You are not 12 years old.", "danger");
-    }
-    if (passwordValidator(password) === false || password === "") {
-      return notification("Invalid password", "danger");
-    }
-    if (passwordMatchValidator(password, confirmPassword) === false) {
-      return notification("Password doesn't match", "danger");
-    }
-    const data = {
-      email: email,
-      username: username,
-      mobile: mobile,
-      password: password,
-      name: name,
-    };
+    if (loading) return "Loading";
+    if (!name.trim()) return notification("Invalid name", "danger");
+    if (!emailValidator(email)) return notification("Invalid email", "danger");
+    if (!usernameValidator(username)) return notification("Invalid username", "danger");
+    if (!mobileValidator(mobile)) return notification("Invalid mobile number", "danger");
+    if (!date || !handleDate(date)) return notification("You must be at least 12 years old.", "danger");
+    if (!passwordValidator(password)) return notification("Invalid password", "danger");
+    if (!passwordMatchValidator(password, confirmPassword)) return notification("Passwords do not match", "danger");
 
-    //clear input fields
+    const data = { email, username, mobile, password, name };
+
     const clearInput = () => {
       setName("");
       setEmail("");
       setUsername("");
       setMobile("");
       setPassword("");
-      setDate("");
       setConfirmPassword("");
+      setDate("");
     };
 
     signup(data, clearInput);
@@ -101,120 +65,53 @@ const Register = () => {
     setIsSignup(false);
     return <Navigate to="/login" />;
   }
+
   if (authData.isLoggedIn) {
     return <Navigate to="/" />;
   }
+
   return (
-    <>
-      <section className="ftco-section">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-6 col-lg-5">
-              <div className="login-wrap p-4 p-md-5">
-                <div className="icon d-flex align-items-center bg-danger justify-content-center text-light">
-                  <GiArchiveRegister />
-                </div>
-                <h3 className="text-center text-danger mb-4">
-                  Haven't an account?
-                </h3>
-                <form onSubmit={handleSubmit} className="login-form">
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control rounded-left"
-                      placeholder="Your name"
-                      required
-                      name="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  {/* username */}
-                  <div className="form-group">
-                    <input
-                      type="text"
-                      className="form-control rounded-left"
-                      placeholder="Username"
-                      required
-                      name="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                  </div>
-                  {/* email */}
-                  <div className="form-group">
-                    <input
-                      type="email"
-                      className="form-control rounded-left"
-                      placeholder="Email"
-                      required
-                      value={email}
-                      name="email"
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
-                  {/* mobile */}
-                  <div className="form-group d-flex">
-                    <input
-                      type="text"
-                      className="form-control rounded-left"
-                      placeholder="Mobile"
-                      required
-                      name="mobile"
-                      value={mobile}
-                      onChange={(e) => setMobile(e.target.value)}
-                    />
-                  </div>
-                  {/* bootstrap date picker for birthdate */}
-                  <div className="form-group d-flex">
-                    <input
-                      type="date"
-                      className="form-control rounded-left"
-                      placeholder="Birthdate"
-                      required
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      name="birthdate"
-                    />
-                  </div>
-
-                  {/* password */}
-                  <div className="form-group d-flex">
-                    <input
-                      type="password"
-                      className="form-control rounded-left"
-                      placeholder="Password"
-                      required
-                      name="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </div>
-                  {/* confirm password */}
-                  <div className="form-group d-flex">
-                    <input
-                      type="password"
-                      className="form-control rounded-left"
-                      placeholder="Confirm Password"
-                      required
-                      value={confirmPassword}
-                      name="confirmPassword"
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="form-group mt-2">
-                    <button className="btn btn-danger rounded submit p-3 px-5 mt-3">
-                      Get Started
-                    </button>
-                  </div>
-                </form>
+    <section className="ftco-section">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-md-6 col-lg-5">
+            <div className="login-wrap p-4 p-md-5">
+              <div className="icon d-flex align-items-center bg-danger justify-content-center text-light">
+                <GiArchiveRegister />
               </div>
+              <h3 className="text-center text-danger mb-4">Haven't an account?</h3>
+              <form onSubmit={handleSubmit} className="login-form">
+                <div className="form-group">
+                  <input type="text" className="form-control rounded-left" placeholder="Your name" required value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="text" className="form-control rounded-left" placeholder="Username" required value={username} onChange={(e) => setUsername(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="email" className="form-control rounded-left" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="text" className="form-control rounded-left" placeholder="Mobile" required value={mobile} onChange={(e) => setMobile(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="date" className="form-control rounded-left" required value={date} onChange={(e) => setDate(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="password" className="form-control rounded-left" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <input type="password" className="form-control rounded-left" placeholder="Confirm Password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                </div>
+                <div className="form-group mt-2">
+                  <button className="btn btn-danger rounded submit p-3 px-5 mt-3">Get Started</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
+
 export default Register;

@@ -175,7 +175,7 @@ const SinglePost = () => {
 
                 <div className="my-3">
                   <h2 className="fs-4 fw-semibold">{title}</h2>
-                  <p>{description}</p>
+                  <p style={{ textAlign: "justify" }}>{description}</p>
 
                   <div className="d-flex justify-content-between align-items-center">
                     {/* like code */}
